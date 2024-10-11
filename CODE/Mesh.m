@@ -33,7 +33,8 @@ function [x,y,elmat,elmatbd, Id, In] = Mesh(dom_range,n)
 %                       {'C Curve',3,2.5,1,1} 
 %                       {'C Curve',3,2.5,1,exp(-1i*3*pi/4)}
 bnd_type = {'C Curve',3,2.5,1,1};
-[s, x, y, keep] = setup_bd(bnd_type,n,dom_range);
+fattener = .1;
+[s, x, y, keep] = setup_bd(bnd_type,n, dom_range, fattener);
 elmat = delaunay(x,y);
 triplot(elmat,x,y); hold on
 

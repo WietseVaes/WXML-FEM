@@ -1,4 +1,4 @@
-function [s, xx, yy, keep] = setup_bd(bnd_type,n, rnge)
+function [s, xx, yy, keep] = setup_bd(bnd_type,n, rnge, fattener)
 % Boundary domain type: 
 %                   2D: {'Kite'},
 
@@ -44,13 +44,16 @@ dgam2 = diff(dgam);
 s.Z = gam;
 s.Zp = dgam;
 s.Zpp = dgam2;
-[xx, yy, keep] = autosample_domain(n, rnge, gam);
 
-s.t = linspace(0,2*pi,1000);
+s.t = linspace(0,2*pi,1000)';
 s.xp = s.Zp(s.t);
 s.sp = abs(s.xp);
 s.tang = s.xp./s.sp;
 s.nx = chebfun( -1i*s.tang, [0, 2*pi]);
+
+s.Z =chebfun(  gam(s.t) -1i*fattener * s.tang, [0, 2*pi]);
+
+[xx, yy, keep] = autosample_domain(n, rnge, s.Z);
 
 
 end
