@@ -17,5 +17,28 @@ function [x,y,elmat,elmatbd, Id, In] = Mesh(dom_range,n)
 %           not lie on the Dirichlet boundary.
 
 
+%                   2D: {'Kite'},
+
+%                       {'Star',a,w}: a = indent (0<a<1); w = #petals
+%                       {'Star',.3,7}
+
+%                       {'Circles',c,R}: c = centers in array; R =
+%                       radii in array;
+%                       {'Circles',[0 + 0i],[2]}
+
+%                       {'C Curve',a,b,c,d}, a = sharpennes (bigger =
+%                       sharper); b = cavity controller (smaller = less
+%                       cavity); c = fatness (larger = fatter all around);
+%                       d = direction (1 = cavity left; exp(1i*(pi-theta)) = rotation theta)  
+%                       {'C Curve',3,2.5,1,1} 
+%                       {'C Curve',3,2.5,1,exp(-1i*3*pi/4)}
+bnd_type = {'C Curve',3,2.5,1,1};
+[s, x, y, keep] = setup_bd(bnd_type,n,dom_range);
+elmat = delaunay(x,y);
+triplot(elmat,x,y); hold on
+
+
+scatter(xx,yy,'*')
+
 
 end
