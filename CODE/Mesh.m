@@ -32,14 +32,31 @@ function [x,y,elmat,elmatbd, Id, In] = Mesh(dom_range,n)
 %                       d = direction (1 = cavity left; exp(1i*(pi-theta)) = rotation theta)  
 %                       {'C Curve',3,2.5,1,1} 
 %                       {'C Curve',3,2.5,1,exp(-1i*3*pi/4)}
-bnd_type = {'C Curve',3,2.5,1,1};
-fattener = .1;
+bnd_type = {'Star',.3,7};
+fattener = 0;
 [s, x, y, keep] = setup_bd(bnd_type,n, dom_range, fattener);
 elmat = delaunay(x,y);
+
+elmat = correct_elmat(elmat, x, y);
+
 triplot(elmat,x,y); hold on
+%triplot(elmatbd,x,y,'k');
+scatter(x,y,'*')
 
 
-scatter(xx,yy,'*')
+end
 
+function elmat = correct_elmat(elmat, x, y)
+Area = zeros(size(elmat,1),1);
 
+for i1 = 1:size(elmat,1)
+    Index = elmat(i1,:);
+
+    xc = x(Index);
+    yc = y(Index);
+
+    Area(i1) = abs(det([ones(length(xc),1) xc yc]));
+     
+end
+elmat(Area > mean(Area),:) = [];
 end
