@@ -28,7 +28,7 @@ switch bnd_type{1}
     case 'Circles'
         c = bnd_type{2}; % centers
         R = bnd_type{3}; %radii
-        gam = @(t) chebfun(@(t) R.*exp(1i*t)-c);
+        gam = chebfun(@(t) R.*exp(1i*t)-c, [0,2*pi]);
     case 'C Curve'
         a = bnd_type{2}; %controls how "sharp" the corners are, bigger = sharper
         b = bnd_type{3}; %2.5 (smaller = less extreme cavity/less depth into the C)
