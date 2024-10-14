@@ -44,14 +44,7 @@ dgam2 = diff(dgam);
 s.Z = gam;
 s.Zp = dgam;
 s.Zpp = dgam2;
-
-s.t = linspace(0,2*pi,1000)';
-s.xp = s.Zp(s.t);
-s.sp = abs(s.xp);
-s.tang = s.xp./s.sp;
-s.nx = chebfun( -1i*s.tang, [0, 2*pi]);
-
-s.Z =chebfun(  gam(s.t) -1i*fattener * s.tang, [0, 2*pi]);
+s.t = linspace(0,2*pi,1000);
 
 [xx, yy, keep] = autosample_domain(n, rnge, s.Z);
 
@@ -77,52 +70,21 @@ function out = incontour(gamma, xs)
 % determine whether x is inside gamma (y = 1), or outside(y=0).
 % here gamma is a closed contour.
 
-if isscalar(xs)
-    x = xs{1};
-    t = linspace(0, 2*pi, 501);
-    t = t(1:end-1).';
-    %N = (length(t)+1)/2;
-    %sz = size(x);
-    % to avoid sampling too close to the boundary, we "push out" the 
-    % boundary in the normal direction. There will be issues here
-    % if the boundary has corners or cusps, or potentially related to
-    % nonconvexity. For now, it should work.
+x = xs{1};
+t = linspace(0, 2*pi, 501);
+t = t(1:end-1).';
+%N = (length(t)+1)/2;
+%sz = size(x);
+% to avoid sampling too close to the boundary, we "push out" the 
+% boundary in the normal direction. There will be issues here
+% if the boundary has corners or cusps, or potentially related to
+% nonconvexity. For now, it should work.
 
-    n = normal(gamma);
-    z = gamma(t); nn = n(t); nn = nn./sqrt(nn(:,1).^2 + nn(:,2).^2);
-    nn = nn(:,1) + 1i*nn(:,2);
-    zz = z + .05*nn;
-    out = inpolygonc(x,zz);
-else
-    xx = xs{1}; yy = xs{2}; zz = xs{3};
-    NN = 100;
-    theta = linspace(0, 2*pi, NN);
-    phi = linspace(0, 2*pi, NN);
+n = normal(gamma);
+z = gamma(t);
+zz = z;
+out = inpolygonc(x,zz);
 
-    [Theta, Phi] = meshgrid(theta, phi);
-
-    X = Theta*0; Y = Theta*0; Z = Theta*0;
-
-    for i1 = 1:NN
-        for i2 = 1:NN
-            G = gamma(Theta(i1,i2),Phi(i1,i2));
-            X(i1,i2) = G(1); Y(i1,i2) = G(2); Z(i1,i2) = G(3);
-        end
-    end
-
-    fv = surf2patch(X, Y, Z, 'triangles');
-    vertices = fv.vertices;
-    faces = fv.faces;
-
-    out = inpolyhedron(faces, vertices, [xx',yy',zz']);
-end
-%dgamma = diff(gamma);
-%y = gamma(t);
-%out = sum(pi/N*(1./(y-x.').*dgamma(t)));
-%out = out(:);
-%out(abs(out)>1e-5) = 1; %in contour
-%out(abs(out)<=1e-5) = 0; %outsided contour
-%out = logical(out);
 end
 
 function T = inpolygonc(z,w) %complex version of inpolygon
