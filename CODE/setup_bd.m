@@ -5,7 +5,7 @@ function [s, xx, yy, keep] = setup_bd(bnd_type,n, rnge, fattener)
 %                       {'Star',a,w}: a = indent (0<a<1); w = #petals
 %                       {'Star',.3,7}
 
-%                       {'Circles',c,R}: c = centers in array; R =
+%                       {'Ci ircles',c,R}: c = centers in array; R =
 %                       radii in array;
 %                       {'Circles',[0 + 0i],[2]}
 
@@ -44,7 +44,7 @@ dgam2 = diff(dgam);
 s.Z = gam;
 s.Zp = dgam;
 s.Zpp = dgam2;
-s.t = linspace(0,2*pi,1000);
+s.t = linspace(0,2*pi,100); %CHANGED FROM 1000 TO 100 OTHERWISE WONT WORK... 
 
 [xx, yy, keep] = autosample_domain(n, rnge, s.Z);
 
