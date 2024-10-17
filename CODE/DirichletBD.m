@@ -5,7 +5,7 @@ function DB_tf = DirichletBD(bd_x,bd_y,s)
 % x and y can be a vector, if so, tf is a vector of 1 and 0s as described
 %above
 DB_int = linspace(0,0.25*pi,length(bd_x));
-DB_points = s.Z(DB_int);
+DB_points = s.Zorigional(DB_int);
 DB_tf = zeros(size(bd_x));
 
 tol = 1e-6;
