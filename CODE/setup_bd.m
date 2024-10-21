@@ -1,4 +1,4 @@
-function [s, xx, yy, keep] = setup_bd(bnd_type,n, rnge, fattener)
+function [s, xx, yy, keep, P] = setup_bd(bnd_type,n, rnge, fattener)
 % Boundary domain type: 
 %                   2D: {'Kite'},
 
@@ -42,13 +42,34 @@ end
 dgam = diff(gam);
 dgam2 = diff(dgam);
 s.Z = gam;
+s.original = s.Z;
 s.Zp = dgam;
 s.Zpp = dgam2;
-s.t = linspace(0,2*pi,100); %CHANGED FROM 1000 TO 100 OTHERWISE WONT WORK... 
 
+s.t = linspace(0,2*pi,100)';
+s.xp = s.Zp(s.t);
+s.sp = abs(s.xp);
+s.tang = s.xp./s.sp;
+s.nx = chebfun( -1i*s.tang, [0, 2*pi]);
+s.Z =chebfun(  gam(s.t) -1i*fattener * s.tang, [0, 2*pi]);
+
+s.t = linspace(0,2*pi,100);  
 [xx, yy, keep] = autosample_domain(n, rnge, s.Z);
 
+%EQUIDISTRIBUTING POINTS ALONG A CONTOUR
+L = arcLength(gam);
 
+xrnge = rnge{1};
+h = (xrnge(2) - xrnge(1)) / n; %distance between mesh points assuming area is square
+N = round(L/h); %number of points used
+
+tic, 
+len = cumsum(abs(diff(gam)));
+g = inv(len);
+
+toc
+
+P = gam(g((0:N-1)*h));
 end
 
 function [xx, yy, keep] = autosample_domain(n, rnge, gam)
