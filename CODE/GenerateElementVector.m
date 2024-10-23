@@ -1,3 +1,25 @@
-% Generate the matrices of b over a considered element i1 (use f). Use the
-% quadrature rule we discussed. you should have the result be belem, a 3x1
-% vector.
+function belem = GenerateElementVector(x, y, elmat, f)
+% Generate the interior element vector belem using the quadrature rule.
+% 
+% Input:
+%   x, y: Coordinates of the points
+%   elmat: Element connectivity matrix for interior elements (3 vertices per triangular element)
+%   f: Function handle for interior source term (e.g., f(x, y))
+%
+% Output:
+%   belem: Interior element vector (3x1 for each triangular element)
+
+belem = zeros(3, 1);
+indices = elmat(:);
+xe = x(indices);
+ye = y(indices);
+Area = polyarea(xe, ye);
+
+% Evaluate the function f at each vertex
+f_values = f(xe, ye);
+
+for i = 1:3
+    belem(i) = (Area / 3) * f_values(i);  % Only f(x_i) contributes for phi_i
+end
+
+end
