@@ -21,7 +21,7 @@
 bnd_type = {'Kite'};
 
 % Define the domain range (xmin, xmax for x, ymin, ymax for y)
-dom_range = {[-5, 5], [-5, 5]};  % Domain in x and y
+dom_range = {[-2, 2], [-2, 2]};  % Domain in x and y
 
 % t interval of the parametrization for Dirichlet boundary condition full
 % boudnary is [0,2*pi]
@@ -71,10 +71,10 @@ Dyvy = @(x,y) cos(pi*x) + y.^0 - 1;
 % forcing here
 f = @(x,y) usol(x,y) + Dxvx(x,y) .* usol(x,y) + vx(x,y) .* Dxu(x,y) + Dyvy(x,y) .* usol(x,y) + vy(x,y) .* Dyu(x,y) - D*(Dxxu(x,y) + Dyyu(x,y));
 
-g1 = @(x,y) s.nx(x + y * 1i) .* (usol(x,y) .* vx(x,y) - D * Dxu(x,y));
-g2 = @(x,y) s.ny(x + y * 1i) .* (usol(x,y) .* vy(x,y) - D * Dyu(x,y));
+g1 = @(x,y) s.nx(inv_gam(x,y,s)) .* (usol(x,y) .* vx(x,y) - D * Dxu(x,y));
+g2 = @(x,y) s.ny(inv_gam(x,y,s)) .* (usol(x,y) .* vy(x,y) - D * Dyu(x,y));
 
-g = @(x,y) g1(x,y) + g2(x,y);
+g = @(x,y) -(g1(x,y) + g2(x,y));
 
 h = @(x,y) usol(x,y);
 
@@ -110,4 +110,14 @@ function s = bd_curve(bnd_type)
     
     s.nx = @(t) real(-1i .* s.Zp(t) ./ abs(s.Zp(t)));
     s.ny = @(t) imag(-1i .* s.Zp(t) ./ abs(s.Zp(t)));
+end
+
+
+function t = inv_gam(x,y,s)
+
+t = zeros(length(x),1);
+for i1 = 1:length(x)
+    t(i1) = roots(s.Z-(x(i1)+1i*y(i1)));
+end
+
 end
