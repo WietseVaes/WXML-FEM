@@ -42,7 +42,7 @@ bd_x = real(bd_pts).';
 bd_y = imag(bd_pts).';
 
 elmatbd = [bd_x,bd_y];
-
+elmatbd
 x_total = [x; bd_x];
 y_total = [y; bd_y];
 
@@ -88,7 +88,7 @@ elmat(Area > mean(Area),:) = [];
 
 end
 
-%ELIMINATING BASED ON VERTICES --> DOESNT GET ALL CASES
+%ELIMINATING BASED ON VERTICES
 
 function elmat = correct_elmat_vert(elmat, x_total, y_total, bd_x, bd_y)
 keep_triangle = true(size(elmat, 1), 1);

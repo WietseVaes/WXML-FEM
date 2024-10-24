@@ -28,7 +28,7 @@ dom_range = {[-2, 2], [-2, 2]};  % Domain in x and y
 Dir_int = [0,pi];
 
 % Set the number of points for discretization
-n = 150;  % You can adjust this for more refined spacing
+n = 50;  % You can adjust this for more refined spacing
 
 D = 1;
 

@@ -1,4 +1,4 @@
-function DB_tf = DirichletBD(bd_x, bd_y, s)
+function DB_tf = DirichletBD(bd_x, bd_y, s,Dir_int)
     % DirichletBD: Determines if boundary points are on the Dirichlet boundary
     % based on the parameterization 't' of the boundary curve.
     %
@@ -20,7 +20,7 @@ function DB_tf = DirichletBD(bd_x, bd_y, s)
         t_value = s.t(idx);  % The 't' value closest to the boundary point
         
         % Check if the 't' value is in the Dirichlet range [0, pi]
-        if t_value >= 0 && t_value <= pi
+        if t_value >= Dir_int(1) && t_value <= Dir_int(2)
             DB_tf(i) = 1;  % This point is on the Dirichlet boundary
         end
     end

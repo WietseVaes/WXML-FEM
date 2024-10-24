@@ -1,4 +1,4 @@
-function [s, xx, yy, keep, P] = setup_bd(bnd_type,n, rnge, fattener)
+function [s, xx, yy, keep, P] = setup_bd(bnd_type,n, rnge, shrinker)
 % Boundary domain type: 
 %                   2D: {'Kite'},
 
@@ -39,6 +39,8 @@ switch bnd_type{1}
         th = b*sin(t);
         gam = d*exp(1i*th).*r;
 end
+
+
 dgam = diff(gam);
 dgam2 = diff(dgam);
 s.Z = gam;
@@ -46,15 +48,18 @@ s.original = s.Z;
 s.Zp = dgam;
 s.Zpp = dgam2;
 
-s.t = linspace(0,2*pi,100)';
-s.xp = s.Zp(s.t);
-s.sp = abs(s.xp);
-s.tang = s.xp./s.sp;
-s.nx = chebfun( -1i*s.tang, [0, 2*pi]);
-s.Z =chebfun(  gam(s.t) -1i*fattener * s.tang, [0, 2*pi]);
+s.xp = @(t) s.Zp(t);
+s.sp = @(t) abs(s.xp(t) );
+s.tang = @(t) s.xp(t)./s.sp(t);
+s.nx = @(t) -1i*s.tang(t);  
 
-s.t = linspace(0,2*pi,100);  
+s.Z = chebfun(@(t) gam(t) + shrinker*s.nx(t), [0, 2*pi]);
+
+s.t = linspace(0,2*pi,100).';
+
 [xx, yy, keep] = autosample_domain(n, rnge, s.Z);
+
+
 
 %EQUIDISTRIBUTING POINTS ALONG A CONTOUR
 L = arcLength(gam);

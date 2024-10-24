@@ -47,6 +47,7 @@ for i=1:length(xc)
     end
 end
 
+
 %Pelem
 
 
@@ -57,6 +58,5 @@ area  = 0.5*abs(det([ones(3,1), xc, yc]));
 end
 
 Pelem = 0;
-Selem = 0;
 end
 

@@ -1,4 +1,4 @@
-function [x,y,elmat,elmatbd, Id, In] = MeshShrink(dom_range,n)
+function [x,y,elmat,elmatbd, Id, In] = MeshShrink(bnd_type, dom_range,n, Dir_int,f,g,h)
 % Computes the mesh of the FEM
 %
 % Input: dom_range; range of domain, for example: {[-1,1],[-2,2]}, i.e., x
@@ -34,9 +34,9 @@ function [x,y,elmat,elmatbd, Id, In] = MeshShrink(dom_range,n)
 %                       {'C Curve',3,2.5,1,exp(-1i*3*pi/4)}
 
 %DUPLICATE DATA POINTS IN ELMAT WHEN USING C CURVE....
-bnd_type = {'Kite'};
-fattener = -0.1;
-[s, x, y, keep, P] = setup_bd(bnd_type,n, dom_range, fattener);
+%bnd_type = {'C Curve',3,2.5,1,1} ;
+shrinker = -0.1;
+[s, x, y, keep, P] = setup_bd(bnd_type,n, dom_range, shrinker);
 
 
 %BD EQUIDISTRIBUTED
@@ -47,7 +47,7 @@ bd_y = imag(bd).';
 x_total = [x; bd_x];
 y_total = [y; bd_y];
 
-DB_tf = DirichletBD(bd_x, bd_y, s);
+DB_tf = DirichletBD(bd_x, bd_y, s,Dir_int);
 Id = find(DB_tf == 1) + size(x,1);
 In = find(DB_tf == 0) + size(x,1);
 
@@ -68,10 +68,13 @@ scatter(x_total(In), y_total(In), 'o', 'MarkerFaceColor', [1, 0, 0], ...
     'MarkerEdgeColor', [1, 0, 0], 'DisplayName', 'Neumann Boundary'); hold on %  green 
 
 elmat = delaunay(x_total,y_total);
-elmat = correct_elmat(elmat, x_total, y_total,bd_x,bd_y);%Apply both filters....?
+elmat = correct_elmat(elmat, x_total, y_total,bd_x,bd_y);
 triplot(elmat,x_total,y_total); hold on
 scatter(x_total,y_total,'*')
 title('elamat with equidistant boundary pts');
+
+Build(x_total,y_total, elmat, elmatbd,f,g);
+
 
 end
 
