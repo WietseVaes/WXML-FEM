@@ -19,10 +19,12 @@ for i1 = 1:length(elmat(:,1)) % for all internal elements
         for j = 1:length(elmat(i1,:))
             M(elmat(i1,i),elmat(i1,j)) = M(elmat(i1,i),elmat(i1,j)) + Melem(i,j);
             S(elmat(i1,i),elmat(i1,j)) = S(elmat(i1,i),elmat(i1,j)) + Selem(i,j);
+            P(elmat(i1,i),elmat(i1,j)) = P(elmat(i1,i),elmat(i1,j)) + Pelem(i,j);
+
         end
     end
 
-    GenerateElementVector; %calculating b vector over current element (belem)
+    GenerateElementVector(elmat(i1,:),x,y,f); %calculating b vector over current element (belem)
     
     % add belem to big b
 
@@ -31,7 +33,7 @@ end
 
 
 for i1 = 1:length(elmatbd(:,1)) % for all boundary elements 
-    GenerateBoundaryElementVector; %calculating b vector over current neumann boundary element (belem)
+    GenerateBoundaryElementVector(elmatbd(i1,:),x,y,g); %calculating b vector over current neumann boundary element (belem)
     
     % add belem to big b
 

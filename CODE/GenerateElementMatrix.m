@@ -49,6 +49,18 @@ end
 
 
 %Pelem
+%randomly assigned V
+vx = @(x) 2*x;
+vy = @(x) 3*x;
+%V = {vx,vy}';
+
+Pelem = zeros(length(xc));
+
+for i=1:length(xc)
+    for j=1:length(yc)
+        Pelem(i,j) = (elemArea / 3)*((X(2,i) * vx(xc(j)) )+(X(3,i) * vy(xc(j)) ));
+    end
+end
 
 
 function area = get_area(indices, x_total, y_total)
@@ -57,6 +69,6 @@ yc = y_total(indices);
 area  = 0.5*abs(det([ones(3,1), xc, yc]));
 end
 
-Pelem = 0;
+
 end
 
