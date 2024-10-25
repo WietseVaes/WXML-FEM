@@ -1,4 +1,4 @@
-function [M,P,S,b] = Build(x,y,elmat,elmatbd,f,g,vx,vy)
+function [M,P,S,b] = Build(x,y,elmat,elmatbd,f,g)
 
 %took out f and g from input...
 n = length(x);
@@ -13,7 +13,7 @@ b 		= zeros(n,1); %Right hand side
 
 
 for i1 = 1:length(elmat(:,1)) % for all internal elements
-    [Melem, Pelem, Selem] = GenerateElementMatrix(elmat(i1,:),x,y,vx,vy); %Generate small matrices (Melem, Pelem, Selem)
+    [Melem, Pelem, Selem] = GenerateElementMatrix(elmat(i1,:),x,y); %Generate small matrices (Melem, Pelem, Selem)
 
     for i = 1:length(elmat(i1,:))
         for j = 1:length(elmat(i1,:))
@@ -24,10 +24,10 @@ for i1 = 1:length(elmat(:,1)) % for all internal elements
         end
     end
 
-    belem = GenerateElementVector(elmat(i1,:),x,y,f); %calculating b vector over current element (belem)
+    GenerateElementVector(elmat(i1,:),x,y,f); %calculating b vector over current element (belem)
     
     for i = 1:length(elmat(i1,:))
-        b(elmat(i1,i)) = b(elmat(i1,i)) + belem(i);
+        b(elmat(i1)) = b(elmat(i1) + belem(i);
            
     end
     
@@ -38,12 +38,8 @@ end
 
 
 for i1 = 1:length(elmatbd(:,1)) % for all boundary elements 
-    belem = GenerateBoundaryElementVector(elmatbd(i1,:),x,y,g); %calculating b vector over current neumann boundary element (belem)
+    GenerateBoundaryElementVector(elmatbd(i1,:),x,y,g); %calculating b vector over current neumann boundary element (belem)
     
-    for i = 1:length(elmatbd(i1,:))
-        b(elmatbd(i1,i)) = b(elmatbd(i1,i)) + belem(i);
-           
-    end
     % add belem to big b
 
 end

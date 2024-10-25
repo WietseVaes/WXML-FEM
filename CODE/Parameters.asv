@@ -28,7 +28,7 @@ dom_range = {[-2, 2], [-2, 2]};  % Domain in x and y
 Dir_int = [0.000001,0.000001];
 
 % Set the number of points for discretization
-n = 150;  % You can adjust this for more refined spacing
+n = 50;  % You can adjust this for more refined spacing
 
 D = 1;
 
@@ -118,10 +118,10 @@ function t = inv_gam(x,y,s)
 t = zeros(length(x),1);
 for i1 = 1:length(x)
     rts = roots(s.Z-(x(i1)+1i*y(i1)));
-    if length(rts) == 2
-        t(i1) = rts(1);
+    if length(rts)==2
+        t(i1) = rts(1)
     else
-        t(i1) = rts;
-    end
+        t(i1) = rts(s.Z -;
 end
+
 end

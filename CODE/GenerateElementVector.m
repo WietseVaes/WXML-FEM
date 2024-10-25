@@ -1,4 +1,4 @@
-function belem = GenerateElementVector(x, y, f)
+function belem = GenerateElementVector(indices,x, y, f)
 % Generate the interior element vector belem using the quadrature rule.
 % 
 % Input:
@@ -12,7 +12,7 @@ function belem = GenerateElementVector(x, y, f)
 belem = zeros(3, 1);
 xe = x(indices);
 ye = y(indices);
-Area = polyarea(xe, ye);
+Area = abs(det([ones(3,1) xe ye])/2);
 
 % Evaluate the function f at each vertex
 f_values = f(xe, ye);

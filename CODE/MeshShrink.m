@@ -1,4 +1,4 @@
-function [x,y,elmat,elmatbd, Id, In] = MeshShrink(bnd_type, dom_range,n, Dir_int,f,g,h)
+function [x_total,y_total,elmat,elmatbd, Id, In] = MeshShrink(bnd_type, dom_range,n, Dir_int,f,g,h)
 % Computes the mesh of the FEM
 %
 % Input: dom_range; range of domain, for example: {[-1,1],[-2,2]}, i.e., x
@@ -35,7 +35,7 @@ function [x,y,elmat,elmatbd, Id, In] = MeshShrink(bnd_type, dom_range,n, Dir_int
 
 %DUPLICATE DATA POINTS IN ELMAT WHEN USING C CURVE....
 %bnd_type = {'C Curve',3,2.5,1,1} ;
-shrinker = -0.1;
+shrinker = -0.001;
 [s, x, y, keep, P] = setup_bd(bnd_type,n, dom_range, shrinker);
 
 
@@ -72,9 +72,6 @@ elmat = correct_elmat(elmat, x_total, y_total,bd_x,bd_y);
 triplot(elmat,x_total,y_total); hold on
 scatter(x_total,y_total,'*')
 title('elamat with equidistant boundary pts');
-
-Build(x_total,y_total, elmat, elmatbd,f,g);
-
 
 end
 

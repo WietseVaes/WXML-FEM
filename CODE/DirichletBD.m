@@ -8,7 +8,6 @@ function DB_tf = DirichletBD(bd_x, bd_y, s,Dir_int)
     % DB_tf: 1 for Dirichlet boundary points (0 ≤ t ≤ π), 0 for Neumann points (π < t ≤ 2π)
 
     DB_tf = zeros(size(bd_x));
-    tol = 1e-6;
     
     for i = 1:length(bd_x)
         % Find the corresponding 't' value for the boundary point (bd_x(i), bd_y(i))
