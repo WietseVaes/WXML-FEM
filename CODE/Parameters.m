@@ -25,10 +25,16 @@ dom_range = {[-2, 2], [-2, 2]};  % Domain in x and y
 
 % t interval of the parametrization for Dirichlet boundary condition full
 % boudnary is [0,2*pi]
-Dir_int = [0.000001,0.000001];
+Dir_int = [0,2*pi];
 
 % Set the number of points for discretization
-n = 150;  % You can adjust this for more refined spacing
+n = 100;  % You can adjust this for more refined spacing
+
+T = 1;
+Dt = .001;
+t = 0:Dt:T;
+nt = length(t);
+
 
 D = 1;
 
@@ -53,30 +59,32 @@ h = @(x, y) (x+y) .^0 - 1;
 
 s = bd_curve(bnd_type);
 
-usol = @(x,y) x .* cos(pi*y);
+usol = @(x,y,t) x .* cos(pi*y) .* sin(pi*t);
 
-Dxu = @(x,y) cos(pi*y) +(x.^0 - 1);
-Dxxu = @(x,y) (x+y).^0 - 1;
+Dxu = @(x,y,t) cos(pi*y) .* sin(pi*t) +(x.^0 - 1);
+Dxxu = @(x,y,t) (x+y+t).^0 - 1;
 
-Dyu = @(x,y) -pi * x .* sin(pi*y);
-Dyyu = @(x,y) - pi^2 * x .* cos(pi*y);
+Dyu = @(x,y,t) -pi * x .* sin(pi*y) .* sin(pi*t);
+Dyyu = @(x,y,t) - pi^2 * x .* cos(pi*y).* sin(t) .* sin(pi*t);
 
-vx = @(x,y) x-y.^2;
-Dxvx = @(x,y) (x+y).^0;
+Dtu = @(x,y,t) pi * x .* cos(pi*y) .* cos(pi*t);
 
-vy = @(x,y) cos(pi*x) .* y;
-Dyvy = @(x,y) cos(pi*x) + y.^0 - 1;
+vx = @(x,y,t) x-y.^2+t;
+Dxvx = @(x,y,t) (x+y+t).^0;
+
+vy = @(x,y,t) cos(pi*x) .* y - t;
+Dyvy = @(x,y,t) cos(pi*x) + (y+t).^0 - 1;
 
 
 % forcing here
-f = @(x,y) usol(x,y) + Dxvx(x,y) .* usol(x,y) + vx(x,y) .* Dxu(x,y) + Dyvy(x,y) .* usol(x,y) + vy(x,y) .* Dyu(x,y) - D*(Dxxu(x,y) + Dyyu(x,y));
+f = @(x,y,t) Dtu(x,y,t) + Dxvx(x,y,t) .* usol(x,y,t) + vx(x,y,t) .* Dxu(x,y,t) + Dyvy(x,y,t) .* usol(x,y,t) + vy(x,y,t) .* Dyu(x,y,t) - D*(Dxxu(x,y,t) + Dyyu(x,y,t));
 
-g1 = @(x,y) s.nx(inv_gam(x,y,s)) .* (usol(x,y) .* vx(x,y) - D * Dxu(x,y));
-g2 = @(x,y) s.ny(inv_gam(x,y,s)) .* (usol(x,y) .* vy(x,y) - D * Dyu(x,y));
+g1 = @(x,y,t) s.nx(inv_gam(x,y,s)) .* (usol(x,y,t) .* vx(x,y,t) - D * Dxu(x,y,t));
+g2 = @(x,y,t) s.ny(inv_gam(x,y,s)) .* (usol(x,y,t) .* vy(x,y,t) - D * Dyu(x,y,t));
 
-g = @(x,y) -(g1(x,y) + g2(x,y));
+g = @(x,y,t) -(g1(x,y,t) + g2(x,y,t));
 
-h = @(x,y) usol(x,y);
+h = @(x,y,t) usol(x,y,t);
 
 
 function s = bd_curve(bnd_type)
