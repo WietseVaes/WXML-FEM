@@ -1,4 +1,4 @@
-function [M,P,S,b] = Build(x,y,elmat,elmatbd,f,g,vx,vy)
+function [M,P,S,b, Mtilde, Ptilde, Stilde, hvec] = Build(x,y,elmat,elmatbd,f,g,vx,vy, Id,h)
 
 %took out f and g from input...
 n = length(x);
@@ -48,3 +48,23 @@ for i1 = 1:length(elmatbd(:,1)) % for all boundary elements
 
 end
 
+Mtilde = M(:,Id);
+Mtilde(Id,:) = [];
+M(Id,:) = [];
+M(:,Id) = [];
+
+Stilde = S(:,Id);
+Stilde(Id,:) = [];
+S(Id,:) = [];
+S(:,Id) = [];
+
+Ptilde = P(:,Id);
+Ptilde(Id,:) = [];
+P(Id,:) = [];
+P(:,Id) = [];
+
+b(Id) = [];
+
+
+hvec = h(x(Id),y(Id));
+size(hvec)

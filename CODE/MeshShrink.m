@@ -35,7 +35,7 @@ function [x_total,y_total,elmat,elmatbd, Id, In] = MeshShrink(bnd_type, dom_rang
 
 %DUPLICATE DATA POINTS IN ELMAT WHEN USING C CURVE....
 %bnd_type = {'C Curve',3,2.5,1,1} ;
-shrinker = -0.001;
+shrinker = -0.002;
 [s, x, y, keep, P] = setup_bd(bnd_type,n, dom_range, shrinker);
 
 
@@ -56,7 +56,7 @@ elmatbd = indices(found);
 elmatbd = [elmatbd, circshift(elmatbd, -1)];
 
 %EVEN PLOT
-figure; 
+figure(2); 
 
 plot(real(s.original), imag(s.original), 'r-', 'LineWidth',2); hold on
 plot(real(s.Z), imag(s.Z), 'b-', 'LineWidth',2')
