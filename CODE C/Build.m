@@ -64,7 +64,3 @@ P(Id,:) = [];
 P(:,Id) = [];
 
 b(Id) = [];
-
-
-%hvec = h(x(Id),y(Id));
-%size(hvec)
