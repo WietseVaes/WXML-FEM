@@ -18,18 +18,18 @@
 %                       {'C Curve',3,2.5,1,1}
 %                       {'C Curve',3,2.5,1,exp(-1i*3*pi/4)}
 
-bnd_type = {'Star',.3,7};
+bnd_type = {"Torus", 3, 1};
 
 % Define the domain range (xmin, xmax for x, ymin, ymax for y)
-dom_range = {[-4, 4], [-4, 4]};  % Domain in x and y
+dom_range = {[-5, 5],[-5,5]};  % Domain in x and y
 
 % t interval of the parametrization for Dirichlet boundary condition full
 % boudnary is [0,2*pi]
-Dir_int = [0,2*pi];
+Dir_int = [0,0];
 
 % Set the number of points for discretization
 if ~exist('n')
-    n = 400;  % You can adjust this for more refined spacing
+    n = 50;  % You can adjust this for more refined spacing
 end
 
 dx = (dom_range{1}(2)- dom_range{2}(1))/n;
@@ -40,55 +40,86 @@ t = 0:Dt:T;
 nt = length(t);
 
 
+
+
+[x,y,elmat,elmatbd, Id, In] = MeshShrink(bnd_type, dom_range, n, Dir_int);
+
+
 D = 1;
 
 % Define the forcing term function f (interior source)
-f = @(x, y) (x+y) .^0;  % Example function
+f =  (x+y + t) .^0 - 1;  % Example function
 
 % Define the boundary term function g ( Neumann boundary conditions)
-g = @(x, y) (x+y) .^0 - 1;
+g = (x+y + t) .^0 .^0 - 1;
 
 % Define the source term function h (interior source)
-h = @(x, y) (x+y) .^0 - 1;
+h = (x+y + t) .^0 .^0 - 1;
 
+% Compute r and theta
+r = sqrt(x.^2 + y.^2);        
+theta = atan2(y, x);           
 
+vx = 10*r.*sin(theta);
+vy = 10*r.*cos(theta);
 
-
-
-
-
-
-
-%% Test case for accuracy testing
-
-s = bd_curve(bnd_type);
-
-usol = @(x,y,t) x .* cos(pi*y) .* sin(pi*t);
-
-Dxu = @(x,y,t) cos(pi*y) .* sin(pi*t) +(x.^0 - 1);
-Dxxu = @(x,y,t) (x+y+t).^0 - 1;
-
-Dyu = @(x,y,t) -pi * x .* sin(pi*y) .* sin(pi*t);
-Dyyu = @(x,y,t) - pi^2 * x .* cos(pi*y).* sin(t) .* sin(pi*t);
-
-Dtu = @(x,y,t) pi * x .* cos(pi*y) .* cos(pi*t);
-
-vx = @(x,y,t) x-y.^2+t;
-Dxvx = @(x,y,t) (x+y+t).^0;
-
-vy = @(x,y,t) cos(pi*x) .* y - t;
-Dyvy = @(x,y,t) cos(pi*x) + (y+t).^0 - 1;
-
-
-% forcing here
-f = @(x,y,t) Dtu(x,y,t) + Dxvx(x,y,t) .* usol(x,y,t) + vx(x,y,t) .* Dxu(x,y,t) + Dyvy(x,y,t) .* usol(x,y,t) + vy(x,y,t) .* Dyu(x,y,t) - D*(Dxxu(x,y,t) + Dyyu(x,y,t));
-
-g1 = @(x,y,t) s.nx(inv_gam(x,y,s)) .* (usol(x,y,t) .* vx(x,y,t) - D * Dxu(x,y,t));
-g2 = @(x,y,t) s.ny(inv_gam(x,y,s)) .* (usol(x,y,t) .* vy(x,y,t) - D * Dyu(x,y,t));
-
-g = @(x,y,t) -(g1(x,y,t) + g2(x,y,t));
-
-h = @(x,y,t) usol(x,y,t);
+% % %% Test case for accuracy testing
+% 
+% s = bd_curve(bnd_type);
+% 
+% usol =  x .* cos(pi*y) .* sin(pi*t);
+% 
+% Dxu =  cos(pi*y) .* sin(pi*t) +(x.^0 - 1);
+% Dxxu =  (x+y+t).^0 - 1;
+% 
+% Dyu = -pi * x .* sin(pi*y) .* sin(pi*t);
+% Dyyu =  - pi^2 * x .* cos(pi*y).* sin(t) .* sin(pi*t);
+% 
+% Dtu = pi * x .* cos(pi*y) .* cos(pi*t);
+% 
+% vx = x-y.^2+t;
+% Dxvx =  (x+y+t).^0;
+% 
+% vy =  cos(pi*x) .* y - t;
+% Dyvy =  cos(pi*x) + (y+t).^0 - 1;
+% 
+% % 
+% % s = bd_curve(bnd_type);
+% % 
+% % usol =  x .* cos(pi*y) .* sin(pi*t);
+% % 
+% % Dxu =  cos(pi*y) .* sin(pi*t) +(10);
+% % Dxxu =  (x+y+t).^0 -1;
+% % 
+% % Dyu = -pi * x .* sin(pi*y) .* sin(pi*t);
+% % Dyyu =  - pi^2 * x .* cos(pi*y).* sin(t) .* sin(pi*t);
+% % 
+% % Dtu = pi * x .* cos(pi*y) .* cos(pi*t);
+% % 
+% % vx = x-y.^2+t;
+% % Dxvx =  (x+y+t).^0;
+% % 
+% % vy =  cos(pi*x) .* y - t;
+% % Dyvy =  cos(pi*x) + (y+t).^0 - 1;
+% % 
+% 
+% % forcing here
+% f =  Dtu + Dxvx .* usol + vx .* Dxu + Dyvy .* usol + vy .* Dyu - D*(Dxxu + Dyyu);
+% 
+% 
+% g1 = zeros(length(x),nt);
+% g2 = zeros(length(x),nt);
+% 
+% for i1 = In
+%     for i2 = 1:nt
+%         g1(i1,i2) =  s.nx(inv_gam(x(i1),y(i1),s)) .* (usol(i1,i2) .* vx(i1,i2) - D * Dxu(i1,i2));
+%         g2(i1,i2) =  s.ny(inv_gam(x(i1),y(i1),s)) .* (usol(i1,i2) .* vy(i1,i2) - D * Dyu(i1,i2));
+%     end
+% end
+% 
+% g =  -(g1 + g2);
+% 
+% h = usol;
 
 
 function s = bd_curve(bnd_type)
@@ -105,6 +136,17 @@ function s = bd_curve(bnd_type)
             c = bnd_type{2}; % centers
             R = bnd_type{3}; %radii
             gam = chebfun(@(t) R.*exp(1i*t)-c, [0,2*pi]);
+        % case 'Circles'    
+        %     R = bnd_type{3}; % Radii for circles
+        %     c = bnd_type{2}; % Centers for circles
+        % 
+        %     % Check for multiple centers
+        %     if numel(c) > 1
+        %         gam = chebfun(@(t) (R(1).* exp(1i * t) - c) + (R(2).* exp(1i * t) - c), [0, 2*pi]);
+        %     else
+        %         gam = chebfun(@(t) R(1).* exp(1i * t) - c(1), [0, 2*pi]);
+        %     end
+        % 
         case 'C Curve'
             a = bnd_type{2}; %controls how "sharp" the corners are, bigger = sharper
             b = bnd_type{3}; %2.5 (smaller = less extreme cavity/less depth into the C)
@@ -114,12 +156,28 @@ function s = bd_curve(bnd_type)
             r = 3+c*tanh(a*cos(t));
             th = b*sin(t);
             gam = d*exp(1i*th).*r;
+        case 'Torus'
+            R = bnd_type{2};
+            r = bnd_type{3};%  radius
+        %NN = length (R);
+        %a = 2*pi / NN;
+        %t = chebfun('t', [0,2*pi], 'splitting',' on');
+        %gam = R(1)* exp(1i*t)-c(1);
+        %for i1 = 2:length(c)
+            %gam = join(gam,R(i1)*exp(i1*t) - c(i1));
+        %end
+            t = chebfun('t',[0,pi],'splitting','on');
+            gam = join(r*exp(2i*t),R*exp(2i*t));
+
+        %gam = chebfun(@(t) (R.* exp(1i * t) - c) + (r.* exp(1i * t) - c), [0, 2*pi]);  
+
+
     end
     dgam = diff(gam);
     dgam2 = diff(dgam);
     s.Z = gam;
     s.Zp = dgam;
-    
+    s.Zpp = dgam2;
     s.nx = @(t) real(-1i .* s.Zp(t) ./ abs(s.Zp(t)));
     s.ny = @(t) imag(-1i .* s.Zp(t) ./ abs(s.Zp(t)));
 end

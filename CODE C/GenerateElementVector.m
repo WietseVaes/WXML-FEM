@@ -15,7 +15,7 @@ ye = y(indices);
 Area = abs(det([ones(3,1) xe ye])/2);
 
 % Evaluate the function f at each vertex
-f_values = f(xe, ye);
+f_values = f(indices);
 
 for i = 1:3
     belem(i) = (Area / 3) * f_values(i);  % Only f(x_i) contributes for phi_i

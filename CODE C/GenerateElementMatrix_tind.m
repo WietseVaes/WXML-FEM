@@ -2,7 +2,7 @@
 % theory and numerical methods. you need to output Melem, Pelem, Selem
 % which are three by three matrices in this case
 
-function [Melem, Pelem, Selem] = GenerateElementMatrix(indices,x_total,y_total,vx,vy)
+function [Melem, Selem] = GenerateElementMatrix_tind(indices,x_total,y_total)
 
 %Melem
 Md = 3;
@@ -35,20 +35,6 @@ for i=1:length(xc)
     end
 end
 
-
-%Pelem
-%randomly assigned V
-% vx = @(x) 2*x;
-% vy = @(x) 3*x;
-%V = {vx,vy}';
-
-Pelem = zeros(length(xc));
-
-for i=1:length(xc)
-    for j=1:length(yc)
-        Pelem(i,j) = (elemArea / 3)*((X(2,i) * vx(indices(j)) )+(X(3,i) * vy(indices(j)) ));
-    end
-end
 
 
 function area = get_area(indices, x_total, y_total)

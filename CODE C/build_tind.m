@@ -1,4 +1,4 @@
-function [M,P,S,b, Mtilde, Ptilde, Stilde] = Build(x,y,elmat,elmatbd,f,g,vx,vy, Id)
+function [M, P, S, b, Mtilde, Ptilde, Stilde] = build_tind(x,y,elmat,elmatbd,f,g,vx,vy, Id)
 
 %took out f and g from input...
 n = length(x);
@@ -15,35 +15,27 @@ b 		= zeros(n,1); %Right hand side
 for i1 = 1:length(elmat(:,1)) % for all internal elements
     [Melem, Pelem, Selem] = GenerateElementMatrix(elmat(i1,:),x,y,vx,vy); %Generate small matrices (Melem, Pelem, Selem)
 
-    for i = 1:length(elmat(i1,:))
-        for j = 1:length(elmat(i1,:))
-            M(elmat(i1,i),elmat(i1,j)) = M(elmat(i1,i),elmat(i1,j)) + Melem(i,j);
-            S(elmat(i1,i),elmat(i1,j)) = S(elmat(i1,i),elmat(i1,j)) + Selem(i,j);
-            P(elmat(i1,i),elmat(i1,j)) = P(elmat(i1,i),elmat(i1,j)) + Pelem(i,j);
 
-        end
-    end
+    M(elmat(i1,:), elmat(i1,:)) = M(elmat(i1,:), elmat(i1,:)) + Melem;
+    S(elmat(i1,:), elmat(i1,:)) = S(elmat(i1,:), elmat(i1,:)) + Selem;
+    P(elmat(i1,:), elmat(i1,:)) = P(elmat(i1,:), elmat(i1,:)) + Pelem;
 
     belem = GenerateElementVector(elmat(i1,:),x,y,f); %calculating b vector over current element (belem)
-    
-    for i = 1:length(elmat(i1,:))
-        b(elmat(i1,i)) = b(elmat(i1,i)) + belem(i);
-           
-    end
-    
+
+
+    b(elmat(i1,:)) = b(elmat(i1,:)) + belem;
+
     % add belem to big b
 
 
 end
 
 
-for i1 = 1:length(elmatbd(:,1)) % for all boundary elements 
+for i1 = 1:length(elmatbd(:,1)) % for all boundary elements
     belem = GenerateBoundaryElementVector(elmatbd(i1,:),x,y,g); %calculating b vector over current neumann boundary element (belem)
-    
-    for i = 1:length(elmatbd(i1,:))
-        b(elmatbd(i1,i)) = b(elmatbd(i1,i)) + belem(i);
-           
-    end
+
+    b(elmatbd(i1,:)) = b(elmatbd(i1,:)) + belem;
+
     % add belem to big b
 
 end

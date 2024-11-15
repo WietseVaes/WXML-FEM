@@ -1,4 +1,4 @@
-function [x_total,y_total,elmat,elmatbd, Id, In] = MeshShrink(bnd_type, dom_range,n, Dir_int,f,g,h)
+function [x_total,y_total,elmat,elmatbd, Id, In] = MeshShrink(bnd_type, dom_range,n, Dir_int)
 % Computes the mesh of the FEM
 %
 % Input: dom_range; range of domain, for example: {[-1,1],[-2,2]}, i.e., x
@@ -35,7 +35,7 @@ function [x_total,y_total,elmat,elmatbd, Id, In] = MeshShrink(bnd_type, dom_rang
 
 %DUPLICATE DATA POINTS IN ELMAT WHEN USING C CURVE....
 %bnd_type = {'C Curve',3,2.5,1,1} ;
-shrinker = -0.001;
+shrinker = -0.01;
 [s, x, y, keep, P] = setup_bd(bnd_type,n, dom_range, shrinker);
 
 
