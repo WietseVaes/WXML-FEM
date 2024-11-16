@@ -170,7 +170,6 @@ function T = inpolygonc(z,w,bnd_type) %complex version of inpolygon
 
         x = real(z);
         y = imag(z);
-        figure;
     else 
         [T, ON] = inpolygon(real(z),imag(z),real(w),imag(w));
         %correct so that points on the edge are not included:

@@ -4,10 +4,7 @@ maxvals = max(max(u));
 minvals = min(min(u));
 
 % Set figure size to fixed dimensions (1120x840 pixels)
-figure('Position', [100, 100, 1120, 840]);
-hold on;
-
-figure(365); hold on
+figure(365,'Position', [100, 100, 1120, 840]); hold on
 for i1 = sp:length(t)
     uplot = u(:,i1);
 
