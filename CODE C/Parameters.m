@@ -21,15 +21,15 @@
 bnd_type = {"Annulus", 3, 1};
 
 % Define the domain range (xmin, xmax for x, ymin, ymax for y)
-dom_range = {[-5, 5],[-5,5]};  % Domain in x and y
+dom_range = {[-4, 4],[-4,4]};  % Domain in x and y
 
 % t interval of the parametrization for Dirichlet boundary condition full
 % boudnary is [0,2*pi]
-Dir_int = [0.01,0.02];
+Dir_int = [0.00001,0.00002];
 
 % Set the number of points for discretization
 if ~exist('n')
-    n = 60;  % You can adjust this for more refined spacing
+    n = 100;  % You can adjust this for more refined spacing
 end
 
 dx = (dom_range{1}(2)- dom_range{2}(1))/n;

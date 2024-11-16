@@ -4,7 +4,8 @@ maxvals = max(max(u));
 minvals = min(min(u));
 
 % Set figure size to fixed dimensions (1120x840 pixels)
-figure(365,'Position', [100, 100, 1120, 840]); hold on
+f = figure(365); hold on
+f.Position = [100, 100, 1120, 840];
 for i1 = sp:length(t)
     uplot = u(:,i1);
 
@@ -14,6 +15,7 @@ for i1 = sp:length(t)
     zlim([minvals,maxvals]); colorbar();
     caxis([minvals,maxvals]); % Makes the colors not jump
     Image = getframe(gcf);
+    axis square
 
     outputDir = 'Results';
 
