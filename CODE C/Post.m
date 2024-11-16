@@ -14,16 +14,16 @@
 % colorbar();
 
 
-Gif_name = 'Approx';
+Gif_name = 'Approx3';
 sp = 1 ;
 
 movie_maker(u,x,y, elmat, t, sp, Gif_name)
 
-Gif_name = 'Solution';
-movie_maker(usol,x,y, elmat, t, sp, Gif_name)
-
-Gif_name = 'error';
-movie_maker(abs(u-usol),x,y, elmat, t, sp, Gif_name)
+% Gif_name = 'Solution';
+% movie_maker(usol,x,y, elmat, t, sp, Gif_name)
+% 
+% Gif_name = 'error';
+% movie_maker(abs(u-usol),x,y, elmat, t, sp, Gif_name)
 
 figure(3);
 subplot(131)

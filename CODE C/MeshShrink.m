@@ -49,7 +49,9 @@ y_total = [y; bd_y];
 
 DB_tf = DirichletBD(bd_x, bd_y, s,Dir_int);
 Id = find(DB_tf == 1) + size(x,1);
-In = find(DB_tf == 0) + size(x,1);
+
+NN = length(x);
+In = setdiff(NN+1:length(x_total),Id);
 
 [found, indices] = ismember(bd_x, x_total);
 elmatbd = indices(found);

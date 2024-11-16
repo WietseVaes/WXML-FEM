@@ -1,4 +1,4 @@
-function [s, xx, yy, keep, P] = setup_bd(bnd_type,n, rnge, shrinker)
+function [s, xx, yy, keep, P] = setup_bd(bnd_type, n, rnge, shrinker)
 % Boundary domain type: 
 %                   2D: {'Kite'},
 
@@ -48,7 +48,7 @@ switch bnd_type{1}
         r = 3+c*tanh(a*cos(t));
         th = b*sin(t);
         gam = d*exp(1i*th).*r;
-    case 'Torus'
+    case 'Annulus'
         R = bnd_type{2};
         r = bnd_type{3};%  radius
         %NN = length (R);
@@ -76,10 +76,10 @@ s.sp = @(t) abs(s.xp(t) );
 s.tang = @(t) s.xp(t)./s.sp(t);
 s.nx = @(t) -1i*s.tang(t);  
 
-%SHRINKER HAS ISSUE W TORUS
+%SHRINKER HAS ISSUE W Annulus
 
 
-if ~strcmp(bnd_type{1}, 'Torus')
+if ~strcmp(bnd_type{1}, 'Annulus')
     s.Z = chebfun(@(t) gam(t) + shrinker*s.nx(t), [0, 2*pi]);
 end
 
@@ -93,19 +93,12 @@ L = arcLength(gam);
 N = floor(L/h);
 
 %EQUIDISTRIBUTING POINTS ALONG A CONTOUR
-if strcmp(bnd_type{1}, 'Torus')
-    %I think you can just consider gam as one it doesnt seem to make a
-    %differnce 
-    % lenout = cumsum(abs(diff(R*exp(2i*t))));
-    % lenin = cumsum(abs(diff(r*exp(2i*t))));
-    % len = lenout + lenin;
-    len = cumsum(abs(diff(gam))); 
+if strcmp(bnd_type{1}, 'Annulus')
     
-    %This makes it worse! 
-    g = inv(len);
-    
+    dtheta = h / r;
+    Dtheta = h / R;
 
-    P = gam(g((0:N-1)*h));
+    P = gam([(0:dtheta:pi-0.001) ,(pi+.001:Dtheta:2*pi)]);
 
 else
     len = cumsum(abs(diff(gam)));
@@ -117,7 +110,7 @@ end
  
 end
 
-function [xx, yy, keep] = autosample_domain(n, rnge, gam,bnd_type)
+function [xx, yy, keep] = autosample_domain(n, rnge, gam, bnd_type)
 xrng = rnge{1}; yrng = rnge{2};
 x = linspace(xrng(1), xrng(2), n).';
 y = linspace(yrng(1), yrng(2), n);
@@ -127,18 +120,17 @@ sz = size(zz);
 zz = zz(:);
 %now keep only the points exterior to the object
 
-keep = incontour(gam, {zz},bnd_type);
+keep = incontour(gam, zz, bnd_type);
 xx = xx(keep);
 yy = yy(keep);
 
 
 end
 
-function out = incontour(gamma, xs,bnd_type)
+function out = incontour(gamma, x, bnd_type)
 % determine whether x is inside gamma (y = 1), or outside(y=0).
 % here gamma is a closed contour.
 
-x = xs{1};
 t = linspace(0, 2*pi, 501);
 t = t(1:end-1).';
 %N = (length(t)+1)/2;
@@ -148,14 +140,13 @@ t = t(1:end-1).';
 % if the boundary has corners or cusps, or potentially related to
 % nonconvexity. For now, it should work.
 
-
-n = normal(gamma);
 z = gamma(t);
 zz = z;
 
 %out = inpolygonc(x,zz);
-if strcmp(bnd_type{1}, 'Torus')
-    out = inpolygonc(x,gamma,bnd_type);
+if strcmp(bnd_type{1}, 'Annulus')
+    R = bnd_type{2}; r = bnd_type{3};
+    out = abs(x) > r+.01 & abs(x) < R - .01;
 else
     out = inpolygonc(x,zz, bnd_type);
 end
@@ -163,7 +154,7 @@ end
 
 function T = inpolygonc(z,w,bnd_type) %complex version of inpolygon
 
-    if strcmp(bnd_type{1}, 'Torus')
+    if strcmp(bnd_type{1}, 'Annulus')
 
         outer_radius = bnd_type{2};
         inner_radius = bnd_type{3};
