@@ -22,4 +22,5 @@ Length = sqrt((xe(2) - xe(1))^2 + (ye(2) - ye(1))^2);
 % Using quadrature rule, compute belem
 belem = (Length / 2) * g(indices);
 
+
 end

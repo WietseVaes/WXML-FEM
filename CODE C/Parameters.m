@@ -18,18 +18,18 @@
 %                       {'C Curve',3,2.5,1,1}
 %                       {'C Curve',3,2.5,1,exp(-1i*3*pi/4)}
 
-bnd_type = {"Torus", 3, 1};
+bnd_type = {"Annulus", 3, 1};
 
 % Define the domain range (xmin, xmax for x, ymin, ymax for y)
-dom_range = {[-5, 5],[-5,5]};  % Domain in x and y
+dom_range = {[-4, 4],[-4,4]};  % Domain in x and y
 
 % t interval of the parametrization for Dirichlet boundary condition full
 % boudnary is [0,2*pi]
-Dir_int = [0,0];
+Dir_int = [0.00001,0.00002];
 
 % Set the number of points for discretization
 if ~exist('n')
-    n = 50;  % You can adjust this for more refined spacing
+    n = 100;  % You can adjust this for more refined spacing
 end
 
 dx = (dom_range{1}(2)- dom_range{2}(1))/n;
@@ -45,23 +45,31 @@ nt = length(t);
 [x,y,elmat,elmatbd, Id, In] = MeshShrink(bnd_type, dom_range, n, Dir_int);
 
 
-D = 1;
+D = 10;
 
 % Define the forcing term function f (interior source)
-f =  (x+y + t) .^0 - 1;  % Example function
+f =  (y + t) .^0 - 1;  % Example function
 
 % Define the boundary term function g ( Neumann boundary conditions)
-g = (x+y + t) .^0 .^0 - 1;
+g = (x + t) .^0 - 1;
 
 % Define the source term function h (interior source)
-h = (x+y + t) .^0 .^0 - 1;
+h = (x  + t) .^0 .^0 - 1;
 
-% Compute r and theta
-r = sqrt(x.^2 + y.^2);        
-theta = atan2(y, x);           
+vx = -5*y  + (t.^0-1);
+vy = 5*x + (t.^0-1);
 
-vx = 10*r.*sin(theta);
-vy = 10*r.*cos(theta);
+for i1 = unique(elmatbd).'
+    if (sqrt(x(i1).^2 + y(i1).^2)) > bnd_type{3}+.1 && abs(angle(x(i1) + y(i1)*1i) - pi/2) < .1
+        g(i1,:) = 15;
+    end
+    if (sqrt(x(i1).^2 + y(i1).^2)) < bnd_type{2}-.1 && abs(angle(x(i1) + y(i1)*1i) - pi/2) < .1*bnd_type{2}/bnd_type{3}
+        g(i1,:) = -15;
+    end
+end
+
+
+
 
 % % %% Test case for accuracy testing
 % 
@@ -156,7 +164,7 @@ function s = bd_curve(bnd_type)
             r = 3+c*tanh(a*cos(t));
             th = b*sin(t);
             gam = d*exp(1i*th).*r;
-        case 'Torus'
+        case 'Annulus'
             R = bnd_type{2};
             r = bnd_type{3};%  radius
         %NN = length (R);
@@ -167,7 +175,7 @@ function s = bd_curve(bnd_type)
             %gam = join(gam,R(i1)*exp(i1*t) - c(i1));
         %end
             t = chebfun('t',[0,pi],'splitting','on');
-            gam = join(r*exp(2i*t),R*exp(2i*t));
+            gam = join(r*exp(2i*t), R*exp(2i*t));
 
         %gam = chebfun(@(t) (R.* exp(1i * t) - c) + (r.* exp(1i * t) - c), [0, 2*pi]);  
 
