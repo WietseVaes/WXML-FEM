@@ -21,7 +21,9 @@ for i70 = 2:nt
     hnp1 = h(Id, i70);
     
     % Update solution for interior points at the current time step
-    uu(:, i70) = (M - Dt * (P - D * S)) \ (Dt * b + M * uu(:, i70 - 1) + Mtilde * hn - ((Mtilde - Dt * (Ptilde - D * Stilde)) * hnp1));
+    uu(keep, i70) = (M(keep,keep) - Dt * (P(keep,keep) - D * S(keep,keep))) \ (Dt * b(keep) + M(keep,keep) * uu(keep, i70 - 1) + Mtilde(keep,:) * hn - ((Mtilde(keep,:) - Dt * (Ptilde(keep,:) - D * Stilde(keep,:))) * hnp1));
+
+    disp([num2str(nt/i70,2),'% done'])
 end
 
 u = zeros(length(x), nt);

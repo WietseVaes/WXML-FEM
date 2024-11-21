@@ -13,7 +13,7 @@ elseif all(yc(1) == yc)
     AREA = abs(det([ones(Md-1, 1), xc, zc]));
 elseif all(zc(1) == zc)
     AREA = abs(det([ones(Md-1, 1), xc, yc]));
-elseif all(abs(yc -(2*xc + 5)) <= eps) || all(abs(yc -(-2*xc + 13)) <= eps)
+else
     v1 = [xc(2) - xc(1), yc(2) - yc(1), zc(2) - zc(1)];
     v2 = [xc(3) - xc(1), yc(3) - yc(1), zc(3) - zc(1)];
 

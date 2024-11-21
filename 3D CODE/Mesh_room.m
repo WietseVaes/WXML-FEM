@@ -4,8 +4,6 @@ function [X, Y, Z, Xorig, Yorig, Zorig, keep, elmat, elmatbd, In] = Mesh_room(do
 x = linspace(dom_range{1}(1),dom_range{1}(2),n);
 y = linspace(dom_range{2}(1),dom_range{2}(2),n);
 z = linspace(dom_range{3}(1),dom_range{3}(2),n);
-dx = (dom_range{1}(2) - dom_range{1}(1))/n;
-dz = (dom_range{3}(2) - dom_range{3}(1))/n;
 
 X = zeros(n^3,1);
 Y = zeros(n^3,1);
@@ -28,58 +26,47 @@ Xorig = X;
 Yorig = Y;
 Zorig = Z;
 
-%filter = ~(X < 0.5 & Y >5) & ~(X > 3.5 & Y > 5);
-filter = ~(X < 0.5 & (2*X + 5) < Y) & ~(X > 3.5 & (-2*X + 13) < Y);
-
-X = X(filter);
-Y = Y(filter);
-Z = Z(filter);
-
-keep = filter;
-
-nx = round(0.5/dx);
-nz = round(8/dz);
-
-x_leftwall = linspace(0, 0.5, n);
-z_leftwall = linspace(0, 8, n);
-x_rightwall = linspace(3.5, 4, n); 
-z_rightwall = linspace(0, 8, n);
-
-[XLWall, ZLWall] = meshgrid(x_leftwall, z_leftwall);
-[XRWall, ZRWall] = meshgrid(x_rightwall, z_rightwall);
-YLWall = 2*XLWall + 5;
-XLWall = XLWall(:);
-YLWall = YLWall(:);
-ZLWall = ZLWall(:);
-
-YRWall = -2* XRWall +13;
-XRWall = XRWall(:);
-YRWall = YRWall(:);
-ZRWall = ZRWall(:);
-
-size(X)
-size(XLWall)
-size(ZLWall)
-
-X = [X;XLWall; XRWall];
-Y = [Y;YLWall; YRWall];
-Z = [Z;ZLWall; ZRWall];
-
-size(X)
-
-Xorig = [Xorig;XLWall; XRWall];
-Yorig = [Yorig;YLWall; YRWall];
-Zorig = [Zorig;ZLWall; ZRWall];
-
-keep = [keep; ones(size(XLWall)); ones(size(XRWall))];
-
 DT = delaunayTriangulation(X,Y,Z);
 
 elmat = DT.ConnectivityList;
 [elmatbd, ~] = convexHull(DT);
-Ibd = unique(elmatbd(:))';
 
-In = Ibd;
+%filter = ~(X < 0.5 & Y >5) & ~(X > 3.5 & Y > 5);
+filter = ~(X < 1 & (X + 5) < Y) & ~(X > 3 & (-X + 9) < Y);
+
+filtind = find(~filter);
+
+% X = X(filter);
+% Y = Y(filter);
+% Z = Z(filter);
+
+keep = filter;
+
+for i1 = size(elmatbd,1):-1:1
+    if any(ismember(elmatbd(i1,:), filtind))
+        elmatbd(i1,:) = [];
+    end
+end
+
+for i1 = size(elmat,1):-1:1
+    if sum(~keep(elmat(i1,:)))>1
+        elmat(i1,:) = [];
+    elseif sum(~keep(elmat(i1,:)))==1
+        elmatbd = [elmatbd; elmat(i1,keep(elmat(i1,:)))];
+    end
+end
+
+% counter = 0;
+% for i1 = flip(filtind .')
+%     elmat(elmat >= i1) = elmat(elmat >= i1) - 1;
+%     elmatbd(elmatbd >= i1) = elmatbd(elmatbd >= i1) - 1;
+%     counter = counter + 1;
+% end
+
+
+ trisurf(elmatbd,X,Y,Z, 'FaceColor', 'cyan'); hold on
+
+In = unique(elmatbd(:)).';
 
 
 
