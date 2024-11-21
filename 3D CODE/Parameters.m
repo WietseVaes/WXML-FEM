@@ -5,6 +5,7 @@
 % Define the domain range (xmin, xmax for x, ymin, ymax for y)
 dom_range = {[-10, 10], [-10, 10], [-10, 10]};  % Domain in x and y
 dom_range = {[0, 4], [0, 6], [0, 8]};
+
 % Set the number of points for discretization
 if ~exist('n')
     n = 10;  % You can adjust this for more refined spacing
@@ -41,8 +42,8 @@ Id = setdiff(Ibd, In);
 %Insulation everywhere that is not in a circle centered at x = .25 y = -.3 with radius
 %.75 when z = top. (heated walls at Dirichlet bd). Incomming flux here over
 %all time
+
 for i1 = In
-    %lets the flux be on the 2d circle not the 3d cylinder. 
     xc = x(i1); yc = y(i1); zc = z(i1);
 
     if (abs(yc - dom_range{2}(1)) <= eps)&& (1 <= xc) && (xc <= 2.5) && (zc < 4)
@@ -53,7 +54,7 @@ for i1 = In
         g(i1,:) = 1; % -1 is incomming, since we take -g in pde.
     end
 
-    if (abs(yc - (2 * xc + 5)) <= eps) && (zc -5 < eps) && (zc >2)&& (0.1 - xc <= eps) && (xc-0.4 <= eps)
+    if (xc - 0.1> eps) && (xc - 0.4 < eps) 
         g(i1,:) = 1; % -1 is incomming, since we take -g in pde.
     end
 
@@ -62,8 +63,6 @@ for i1 = In
     end
 
 end
-
-
 
 
 scatter3(x(Ibd(g(Ibd,1) == 0)),y(Ibd(g(Ibd,1) == 0)),z(Ibd(g(Ibd,1) == 0)),".b"); hold on;
