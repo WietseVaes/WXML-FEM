@@ -36,13 +36,13 @@ if ~exist('n')
     if ~exist('T')
         T = 1;  % You can adjust this for more refined spacing
     end
-    Dt = dx^2;
+    Dt = 0.01;
 else
     dx = (dom_range{1}(2)- dom_range{2}(1))/n;
     if ~exist('T')
         T = 1;  % You can adjust this for more refined spacing
     end
-    Dt = 0.01;
+    Dt = dx^2;
 end
 
 t = 0:Dt:T;
