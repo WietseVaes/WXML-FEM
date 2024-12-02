@@ -1,7 +1,7 @@
 clear all
 clf
 
-n_values = 2.^(4:10); 
+n_values = 2.^(4:9); 
 dx_vals = zeros(size(n_values));
 error = zeros(size(n_values));
 bnd_type = {'Kite'};
