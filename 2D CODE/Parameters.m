@@ -17,13 +17,13 @@
 %                       d = direction (1 = cavity left; exp(1i*(pi-theta)) = rotation theta)
 %                       {'C Curve',3,2.5,1,1}
 %                       {'C Curve',3,2.5,1,exp(-1i*3*pi/4)}
-%bnd_type = {'Annulus',1.9,1};
+%                       bnd_type = {'Annulus',1.9,1};
 if ~exist('bnd_type')
-    bnd_type = {'Kite'};
+    bnd_type = {'Annulus',1.9,1};
 end
 
 % Define the domain range (xmin, xmax for x, ymin, ymax for y)
-dom_range = {[-2, 2],[-2,2]};  % Domain in x and y
+dom_range = {[-2,2],[-2,2]};  % Domain in x and y
 
 % t interval of the parametrization for Dirichlet boundary condition full
 % boudnary is [0,2*pi]
@@ -32,16 +32,16 @@ Dir_int = [0.,2*pi];
 
 % Set the number of points for discretization
 if ~exist('n')
-    n = 20;  % You can adjust this for more refined spacing
+    n = 100;  % You can adjust this for more refined spacing
     dx = (dom_range{1}(2)- dom_range{2}(1))/n;
     if ~exist('T')
-        T = .3;  % You can adjust this for more refined spacing
+        T = 1;  % You can adjust this for more refined spacing
     end
     Dt = 0.01;
 else
     dx = (dom_range{1}(2)- dom_range{2}(1))/n;
     if ~exist('T')
-        T = .3;  % You can adjust this for more refined spacing
+        T = 1;  % You can adjust this for more refined spacing
     end
 
 end

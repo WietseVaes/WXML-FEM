@@ -12,8 +12,8 @@ bnd_type = {'Kite'};
 
 % Time_Meth = "Implicit Euler";
 % Time_Meth = "CN";
-%Time_Meth = "BDF2";
-%Time_Meth = "RK4";
+% Time_Meth = "BDF2";
+% Time_Meth = "RK4";
 Time_Meth = ["Implicit Euler", "CN", "BDF2"];
 counter = 1;
 all_err = zeros(3,NN);
@@ -42,6 +42,7 @@ for met = Time_Meth
         [x,y,elmat,elmatbd, Id, In] = MeshShrink(bnd_type, dom_range, n, Dir_int);
         Comp
         err(i34) = L2_error(usol(:,end) -  u(:,end), elmat, x, y);
+        i34/NN/3 * 100
     end
     all_err(counter,:) = err;
     all_dx_vals(counter,:) = dx_vals;
@@ -51,7 +52,11 @@ save('error_and_dx_results.mat', 'all_err','all_dx_vals');
 
 %Plot
 figure(17);
-loglog(dx_vals, err, '-o', 'LineWidth', 1.5);
+loglog(all_dx_vals(1,:), all_err(1,:), '-*', 'LineWidth', 2,'MarkerSize',10);hold on
+loglog(all_dx_vals(2,:), all_err(2,:), '-x', 'LineWidth', 2,'MarkerSize',10);
+loglog(all_dx_vals(3,:), all_err(3,:), '-', 'LineWidth', 2,'MarkerSize',10);
+loglog(all_dx_vals(3,:), all_dx_vals(3,:).^2, 'k', 'LineWidth', 2);
+
 xlabel('dx');
 ylabel('L2 Error');
 title('Error Convergence Rate');
@@ -75,11 +80,11 @@ function L2_error = L2_error(err, elmat, x, y)
         y_elem = y(vertices);         
 
        
-        area = abs(det([ones(3,1), x_elem, y_elem]) / 2);    
+        area = abs(det([ones(3,1), x_elem, y_elem]) / 2);  
        
         u_error = (err(vertices)).^2;
         
-        element_error = (area / 3) * sum(u_error); 
+        element_error = (area / 3) * sum(u_error);
         L2_error = L2_error + element_error;
     end
 

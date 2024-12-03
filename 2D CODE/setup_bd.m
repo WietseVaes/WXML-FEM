@@ -15,6 +15,8 @@ function [s, xx, yy, keep, P] = setup_bd(bnd_type, n, rnge, shrinker)
 %                       d = direction (1 = cavity left; exp(1i*(pi-theta)) = rotation theta)  
 %                       {'C Curve',3,2.5,1,1} 
 %                       {'C Curve',3,2.5,1,exp(-1i*3*pi/4)}
+%                       
+%                       {'Heart', 3}
 
 switch bnd_type{1}
     case 'Kite'
@@ -61,7 +63,14 @@ switch bnd_type{1}
         %Anulus definition (next 2 lines)
         t = chebfun('t',[0,pi],'splitting','on');
         gam = join(r*exp(2i*t),R*exp(2i*t));
-
+    case 'Heart'
+        % Extract the scale parameter
+        scale = bnd_type{2};
+        
+        % Define the parametrization
+        t = chebfun(@(t) t, [0, 2*pi]); % Parameter over [0, 2*pi]
+        r = scale * (1 - sin(t)); % Polar equation for a heart shape
+        gam = r .* exp(1i * t); % Convert to Cartesian coordinates
 end
 
 dgam = diff(gam);
