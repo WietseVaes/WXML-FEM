@@ -6,6 +6,11 @@ dx_vals = zeros(size(n_values));
 error = zeros(size(n_values));
 bnd_type = {'Kite'};
 
+Time_Meth = "Implicit Euler";
+%Time_Meth = "CN";
+%Time_Meth = "BDF2";
+%Time_Meth = "RK4";
+
 for i34 = 1:length(n_values) 
     n = n_values(i34);
     T = 0.3;
