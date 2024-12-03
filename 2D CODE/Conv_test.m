@@ -3,36 +3,51 @@ clear all
 n = 5;
 Dt = .4;
 
-NN = 8;
+NN = 5;
 
 dx_vals = zeros(NN,1);
 dt_vals = zeros(NN,1);
 err = zeros(NN,1);
 bnd_type = {'Kite'};
 
-%Time_Meth = "Implicit Euler";
-Time_Meth = "CN";
+% Time_Meth = "Implicit Euler";
+% Time_Meth = "CN";
 %Time_Meth = "BDF2";
 %Time_Meth = "RK4";
+Time_Meth = ["Implicit Euler", "CN", "BDF2"];
+counter = 1;
+all_err = zeros(3,NN);
+all_dx_vals = zeros(3,NN);
 
-for i34 = 1:NN 
-    n = n*2;
-    if Time_Meth == "Implicit Euler"
-        Dt = Dt/4;
-    elseif Time_Meth == "CN" || Time_Meth == "BDF2"
-        Dt = Dt/2;
-    else
-        error("Method is not implemented correctly")
+for met = Time_Meth
+    dx_vals = zeros(NN,1);
+    dt_vals = zeros(NN,1);
+    err = zeros(NN,1);
+    n = 5;
+    Dt = .4;
+    for i34 = 1:NN 
+        n = n*2;
+        if met == "Implicit Euler"
+            Dt = Dt/4;
+        elseif met == "CN" || met == "BDF2"
+            Dt = Dt/2;
+        else
+            error("Method is not implemented correctly")
+        end
+        T = .6;
+    
+        Parameters;
+        dx_vals(i34) = dx;
+    
+        [x,y,elmat,elmatbd, Id, In] = MeshShrink(bnd_type, dom_range, n, Dir_int);
+        Comp
+        err(i34) = L2_error(usol(:,end) -  u(:,end), elmat, x, y);
     end
-    T = .6;
-
-    Parameters;
-    dx_vals(i34) = dx;
-
-    [x,y,elmat,elmatbd, Id, In] = MeshShrink(bnd_type, dom_range, n, Dir_int);
-    Comp
-    err(i34) = L2_error(usol(:,end) -  u(:,end), elmat, x, y);
+    all_err(counter,:) = err;
+    all_dx_vals(counter,:) = dx_vals;
+    counter = counter +1;
 end
+save('error_and_dx_results.mat', 'all_err','all_dx_vals');
 
 %Plot
 figure(17);
