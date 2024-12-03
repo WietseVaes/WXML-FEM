@@ -17,7 +17,7 @@
 %                       d = direction (1 = cavity left; exp(1i*(pi-theta)) = rotation theta)
 %                       {'C Curve',3,2.5,1,1}
 %                       {'C Curve',3,2.5,1,exp(-1i*3*pi/4)}
-% bnd_type = {'Annulus',1.9,1};
+ bnd_type = {'Annulus',1.9,1};
 if ~exist('bnd_type')
     bnd_type = {'Kite'};
 end
@@ -27,8 +27,8 @@ dom_range = {[-2, 2],[-2,2]};  % Domain in x and y
 
 % t interval of the parametrization for Dirichlet boundary condition full
 % boudnary is [0,2*pi]
-Dir_int = [0.,2*pi];
-%Dir_int = [0.001,0.0001];
+%Dir_int = [0.,2*pi];
+Dir_int = [0.001,0.0001];
 
 % Set the number of points for discretization
 if ~exist('n')
@@ -79,6 +79,9 @@ if strcmp(bnd_type{1},'Annulus')
 
     % Define the source term function h (interior source)
     h = (x  + t) .^0 .^0 - 1;
+    h2 = (x  + t) .^0 .^0 - 1;
+    Dth = (x  + t) .^0 .^0 - 1;
+    Dth2 = (x  + t) .^0 .^0 - 1;
 
     vx = -5*y  + (t.^0-1);
     vy = 5*x + (t.^0-1);
