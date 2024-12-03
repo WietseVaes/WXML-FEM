@@ -43,17 +43,8 @@ else
     if ~exist('T')
         T = .3;  % You can adjust this for more refined spacing
     end
-    if Time_Meth == "Implicit Euler"
-        Dt = dx^2;
-    elseif Time_Meth == "CN" || Time_Meth == "BDF2"
-        Dt = dx;
-    else
-        error("Method is not implemented correctly")
-    end
 
 end
-
-Dt = 0.001;
 
 t = 0:Dt:T;
 nt = length(t);
