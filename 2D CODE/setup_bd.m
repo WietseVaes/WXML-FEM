@@ -62,6 +62,11 @@ switch bnd_type{1}
         t = chebfun('t',[0,pi],'splitting','on');
         gam = join(r*exp(2i*t),R*exp(2i*t));
 
+    case 'Spot'
+
+        load('C:\Users\wiets\Documents\GitHub\WXML-FEM\Boundary\Spot.mat');
+        gam = bd;
+
 end
 
 dgam = diff(gam);

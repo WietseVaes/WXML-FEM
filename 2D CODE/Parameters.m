@@ -17,7 +17,10 @@
 %                       d = direction (1 = cavity left; exp(1i*(pi-theta)) = rotation theta)
 %                       {'C Curve',3,2.5,1,1}
 %                       {'C Curve',3,2.5,1,exp(-1i*3*pi/4)}
+
+%                       {'Spot'}
 %bnd_type = {'Annulus',1.9,1};
+bnd_type = {'Spot',1.9,1};
 if ~exist('bnd_type')
     bnd_type = {'Kite'};
 end
@@ -32,7 +35,7 @@ Dir_int = [0.,2*pi];
 
 % Set the number of points for discretization
 if ~exist('n')
-    n = 20;  % You can adjust this for more refined spacing
+    n = 25;  % You can adjust this for more refined spacing
     dx = (dom_range{1}(2)- dom_range{2}(1))/n;
     if ~exist('T')
         T = .3;  % You can adjust this for more refined spacing
@@ -211,6 +214,10 @@ switch bnd_type{1}
 
         %gam = chebfun(@(t) (R.* exp(1i * t) - c) + (r.* exp(1i * t) - c), [0, 2*pi]);
 
+    case 'Spot'
+
+        load('C:\Users\wiets\Documents\GitHub\WXML-FEM\Boundary\Spot.mat');
+        gam = bd;
 
 end
 dgam = diff(gam);

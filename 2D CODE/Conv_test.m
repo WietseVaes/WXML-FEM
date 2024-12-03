@@ -3,7 +3,7 @@ clear all
 n = 5;
 Dt = .4;
 
-NN = 8;
+NN = 6;
 
 dx_vals = zeros(NN,1);
 dt_vals = zeros(NN,1);
