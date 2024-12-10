@@ -1,6 +1,6 @@
-% Generate the matrices of M, P and S over a considered element i1 through
+% Generate the matrices of M and S over a considered element i1 through
 % theory and numerical methods. you need to output Melem, Pelem, Selem
-% which are three by three matrices in this case
+% which are 3x3 matrices in this case
 
 function [Melem, Selem] = GenerateElementMatrix_tind(indices,x_total,y_total)
 

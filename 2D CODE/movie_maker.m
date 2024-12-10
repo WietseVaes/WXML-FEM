@@ -1,21 +1,33 @@
-function [] = movie_maker(u,x,y, elmat,t, sp, Gif_name)
+function [] = movie_maker(u,x,y, elmat,t, sp, Gif_name,s)
 
-maxvals = max(max(u));
-minvals = min(min(u));
+maxvals = max(max(u))
+minvals = min(min(u))
 
 % Set figure size to fixed dimensions (1120x840 pixels)
 f = figure(365); hold on
 f.Position = [100, 100, 1120, 840];
+f.Color = [1 1 1]; 
 for i1 = sp:length(t)
     uplot = u(:,i1);
 
-    trisurf(elmat,x,y,uplot); view(2); shading interp;cmocean('curl');
+    trisurf(elmat,x,y,uplot); shading interp;cmocean('topo'); view(2);
     title(['Solution at time $t =~$',num2str(t(i1),'%.3f')],'Interpreter','latex','FontSize',20)
     xlabel('$x$','Interpreter','latex','FontSize',20); ylabel('$y$','Interpreter','latex','FontSize',20)
-    zlim([minvals,maxvals]); colorbar();
+    zlim([minvals,maxvals]); 
+    colorbar();
     caxis([minvals,maxvals]); % Makes the colors not jump
+    symabsval = max(abs(minvals),abs(maxvals));
+    zlim([-symabsval,symabsval]); 
+    colorbar();
+    caxis([-symabsval,symabsval]); % Makes the colors not jump
+    axis square 
+    grid off
+    axis off;
+    hold on; 
+    plot(s.Z,'linewidth',2,'k')
     Image = getframe(gcf);
-    axis square
+    
+    axis square;
 
     outputDir = 'Results';
 
@@ -41,13 +53,10 @@ end
 
 n = i-1;
 writerObj = VideoWriter(outgifFile,'MPEG-4');
-%writerObj.FrameRate = 30;
 writerObj.FrameRate = 20;
-% set the seconds per image
 secsPerImage = ones(n) ;
-% open the video writer
 open(writerObj);
-% write the frames to the video
+
 for u=1:n
     % convert the image to a frame
     frame = im2frame(images{u});
@@ -55,6 +64,6 @@ for u=1:n
         writeVideo(writerObj, frame);
     end
 end
-% close the writer object
+
 close(writerObj);
 end

@@ -13,10 +13,10 @@ uu = zeros(length(interior_nodes), nt);
 % Initial Dirichlet boundary condition
 uu(:, 1) = h(interior_nodes, 1);
 
-[M, S, Mtilde,  Stilde] = build_tind(x, y, elmat, elmatbd, f(:, (1)), g(:, (1)), vx(:, (1)), vy(:, (1)), Id);
+[M, S, Mtilde,  Stilde] = build_tind(x, y, elmat, Id);
 
 u = zeros(length(x), nt);
-u(Id, 1) = h(Id, 1);               % Dirichlet b  oundary condition at the current step
+u(Id, 1) = h(Id, 1);               % Dirichlet boundary condition at the current step
 u(interior_nodes, 1) = uu(:, 1); % Interior solution for current time step
 
 % Time-stepping loop

@@ -17,88 +17,89 @@
 %                       d = direction (1 = cavity left; exp(1i*(pi-theta)) = rotation theta)
 %                       {'C Curve',3,2.5,1,1}
 %                       {'C Curve',3,2.5,1,exp(-1i*3*pi/4)}
-%                       bnd_type = {'Annulus',1.9,1};
+
+
+%bnd_type = {'Annulus',1.9,1};
 if ~exist('bnd_type')
-    bnd_type = {'Annulus',1.9,1};
+    bnd_type = {'Kite'};
 end
 
-% Define the domain range (xmin, xmax for x, ymin, ymax for y)
-dom_range = {[-2,2],[-2,2]};  % Domain in x and y
+% Define the domain range ([xmin, xmax] , [ymin, ymax])
+dom_range = {[-2, 2],[-2,2]};
 
-% t interval of the parametrization for Dirichlet boundary condition full
+% t interval of the parametrization for Dirichlet boundary condition - full
 % boudnary is [0,2*pi]
-Dir_int = [0.,2*pi];
-%Dir_int = [0.001,0.0001];
+Dir_int = [0., pi];
+
 
 % Set the number of points for discretization
 if ~exist('n')
-    n = 100;  % You can adjust this for more refined spacing
+    n = 50;  % You can adjust this for more refined spacing
     dx = (dom_range{1}(2)- dom_range{2}(1))/n;
-    if ~exist('T')
-        T = 1;  % You can adjust this for more refined spacing
-    end
-    Dt = 0.01;
-else
-    dx = (dom_range{1}(2)- dom_range{2}(1))/n;
-    if ~exist('T')
-        T = 1;  % You can adjust this for more refined spacing
-    end
 
+else
+    dx = (dom_range{1}(2)- dom_range{2}(1))/n;  
 end
 
+if ~exist('T')
+    T = 1; 
+end
+
+Dt = 0.01;
 t = 0:Dt:T;
 nt = length(t);
 
-%Time_Meth = "Implicit Euler";
+
+Time_Meth = "Implicit Euler";
 %Time_Meth = "CN";
-Time_Meth = "BDF2";
+%Time_Meth = "BDF2";
 %Time_Meth = "RK4";
-
-
-
-
-
-
 
 
 if strcmp(bnd_type{1},'Annulus')
 
-    
+    s = bd_curve(bnd_type);
     Dir_int = [0.001,0.0001];
 
     [x,y,elmat,elmatbd, Id, In] = MeshShrink(bnd_type, dom_range, n, Dir_int);
 
     D = 10;
     
-    t2 = t + Dt/2;
+    t2 = t + Dt/2; %Initilize half steps
 
     % Define the forcing term function f (interior source)
-    f =  (y + t) .^0 - 1;  
-    f2 =  (y + t2) .^0 - 1; 
+    f =  (y + t).^0 - 1 ;  
+    f2 =  (y + t2).^0 - 1 ; 
 
     % Define the boundary term function g ( Neumann boundary conditions)
-    g = (x + t) .^0 - 1;
-    g2 = (x + t2) .^0 - 1;
+    g = (x + t).^0 - 1 ;
+    g2 = (x + t2).^0 - 1 ;
 
     % Define the source term function h (interior source)
-    h = (x  + t) .^0 .^0 - 1;
-    h2 = (x  + t) .^0 .^0 - 1;
-    Dth = (x  + t) .^0 .^0 - 1;
-    Dth2 = (x  + t) .^0 .^0 - 1;
+    h = (x  + t).^0 - 1 ;
+    h2 = (x  + t).^0 - 1 ;
+    Dth = (x  + t).^0 - 1 ;
+    Dth2 = (x  + t).^0 - 1 ;
 
-    vx = -5*y  + (t.^0-1);
-    vy = 5*x + (t.^0-1);
-    vx2 = -5*y  + (t2.^0-1);
-    vy2 = 5*x + (t2.^0-1);
+    vx = -15*y .* sin(2*pi*t); % 
+    vy = 15*x   .* sin(2*pi*t); %
+    
+    %half steps
+    vx2 = -15*y.* sin(2*pi*t2); %
+    vy2 = 15*x  .* sin(2*pi*t2); % 
+    
+    %Normalize
+    vx = 15 * vx ./ sqrt(vx.^2+vy.^2);
+    vy = 15 * vy ./ sqrt(vx.^2+vy.^2);
+ 
+    for i1 = unique(elmatbd(:)).' %Define neuman 
+        if (sqrt(x(i1).^2 + y(i1).^2) > bnd_type{3}+.1 && ((abs(angle(x(i1) + y(i1)*1i) - pi/2) < .1)  || abs(angle(x(i1) + y(i1)*1i) + pi/2 ) < .1  )) || ((sqrt(x(i1).^2 + y(i1).^2)) < bnd_type{2}-.1 && ((abs(angle(x(i1) + y(i1)*1i) - pi) < .1*bnd_type{2}/bnd_type{3})  || abs(angle(x(i1) + y(i1)*1i) +pi ) < .1*bnd_type{2}/bnd_type{3}  || abs(angle(x(i1) + y(i1)*1i) ) < .1*bnd_type{2}/bnd_type{3}))
 
-    for i1 = unique(elmatbd(:)).'
-        if (sqrt(x(i1).^2 + y(i1).^2)) > bnd_type{3}+.1 && abs(angle(x(i1) + y(i1)*1i) - pi/2) < .1
-            g(i1,:) = 15;
-            g2(i1,:) = 15;
-        end
-        if (sqrt(x(i1).^2 + y(i1).^2)) < bnd_type{2}-.1 && abs(angle(x(i1) + y(i1)*1i) - pi/2) < .1*bnd_type{2}/bnd_type{3}
-            g(i1,:) = -15;
-            g2(i1,:) = -15;
+            g(i1,:) = 25 *sin(4*pi*t);
+            g2(i1,:) = 25 *sin(4*pi*t);
+        elseif (sqrt(x(i1).^2 + y(i1).^2) > bnd_type{3}+.1 && ((abs(angle(x(i1) + y(i1)*1i)) < .1)  || abs(angle(x(i1) + y(i1)*1i) - pi ) < .1  ||abs(angle(x(i1) + y(i1)*1i) + pi ) < .1  )) || ((sqrt(x(i1).^2 + y(i1).^2)) < bnd_type{2}-.1 && ((abs(angle(x(i1) + y(i1)*1i) - pi/2) < .1*bnd_type{2}/bnd_type{3})  || abs(angle(x(i1) + y(i1)*1i) + pi/2 ) < .1*bnd_type{2}/bnd_type{3}))
+            g(i1,:) =  -25 *sin(4*pi*t);
+            g2(i1,:) = -25 *sin(4*pi*t);
         end
     end
 
@@ -107,7 +108,6 @@ else
     [x,y,elmat,elmatbd, Id, In] = MeshShrink(bnd_type, dom_range, n, Dir_int);
 
     D = 1;
-    % %% Test case for accuracy testing
 
     s = bd_curve(bnd_type);
     
@@ -149,6 +149,7 @@ else
     g12 = zeros(length(x),nt);
     g22 = zeros(length(x),nt);
 
+    %Set neuman boundary
     for i1 = In
         for i2 = 1:nt
             g1(i1,i2) =  s.nx(inv_gam(x(i1),y(i1),s)) .* (usol(i1,i2) .* vx(i1,i2) - D * Dxu(i1,i2));
@@ -168,6 +169,7 @@ else
 
 end
 
+%Define boundary curve 
 function s = bd_curve(bnd_type)
 switch bnd_type{1}
     case 'Kite'
@@ -182,17 +184,6 @@ switch bnd_type{1}
         c = bnd_type{2}; % centers
         R = bnd_type{3}; %radii
         gam = chebfun(@(t) R.*exp(1i*t)-c, [0,2*pi]);
-        % case 'Circles'
-        %     R = bnd_type{3}; % Radii for circles
-        %     c = bnd_type{2}; % Centers for circles
-        %
-        %     % Check for multiple centers
-        %     if numel(c) > 1
-        %         gam = chebfun(@(t) (R(1).* exp(1i * t) - c) + (R(2).* exp(1i * t) - c), [0, 2*pi]);
-        %     else
-        %         gam = chebfun(@(t) R(1).* exp(1i * t) - c(1), [0, 2*pi]);
-        %     end
-        %
     case 'C Curve'
         a = bnd_type{2}; %controls how "sharp" the corners are, bigger = sharper
         b = bnd_type{3}; %2.5 (smaller = less extreme cavity/less depth into the C)
@@ -209,10 +200,8 @@ switch bnd_type{1}
         t = chebfun('t',[0,pi],'splitting','on');
         gam = join(r*exp(2i*t), R*exp(2i*t));
 
-        %gam = chebfun(@(t) (R.* exp(1i * t) - c) + (r.* exp(1i * t) - c), [0, 2*pi]);
-
-
 end
+
 dgam = diff(gam);
 dgam2 = diff(dgam);
 s.Z = gam;
@@ -220,11 +209,11 @@ s.Zp = dgam;
 s.Zpp = dgam2;
 s.nx = @(t) real(-1i .* s.Zp(t) ./ abs(s.Zp(t)));
 s.ny = @(t) imag(-1i .* s.Zp(t) ./ abs(s.Zp(t)));
+
 end
 
 
 function t = inv_gam(x,y,s)
-
 t = zeros(length(x),1);
 for i1 = 1:length(x)
     rts = roots(s.Z-(x(i1)+1i*y(i1)));
